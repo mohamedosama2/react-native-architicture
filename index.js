@@ -1,22 +1,35 @@
 // In index.js of a new project
-import React, { useEffect, useState } from 'react'
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native'
+import React, { useEffect } from 'react'
+import { View, Text, TouchableOpacity } from 'react-native'
 import { Navigation } from 'react-native-navigation'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-const isLogged = 'isLogged'
-const loginRoot = {
-  root: {
-    stack: {
-      children: [
-        {
-          component: {
-            name: 'Login'
-          }
+
+Navigation.setDefaultOptions({
+  animations: {
+    showModal: {
+      enter: {
+        enabled: true,
+        alpha: {
+          from: 0,
+          to: 1,
+          duration: 300
+        },
+        scaleX: {
+          from: 0.2,
+          to: 0.9
         }
-      ]
+      },
+      exit: {
+        enabled: true,
+        alpha: {
+          from: 1,
+          to: 0,
+          duration: 300
+        }
+      }
     }
   }
-}
+})
+
 function Home(props) {
   useEffect(() => {
     const listener = {
@@ -41,8 +54,11 @@ function Home(props) {
       <TouchableOpacity
         onPress={async () => {
           console.log('Auth')
+          Navigation.push(props.componentId, {
+            component: { name: 'Setting' }
+          })
         }}>
-        <Text>Out</Text>
+        <Text>Go Settiign</Text>
       </TouchableOpacity>
     </View>
   )
@@ -51,7 +67,15 @@ function Setting(props) {
   console.log('Setting', props)
   return (
     <View>
-      <Text>Setting Secreen</Text>
+      <TouchableOpacity
+        onPress={async () => {
+          console.log('Auth')
+          Navigation.push(props.componentId, {
+            component: { name: 'Home' }
+          })
+        }}>
+        <Text>Go Home</Text>
+      </TouchableOpacity>
     </View>
   )
 }
@@ -65,47 +89,19 @@ Home.options = {
     text: 'Home'
   }
 }
-function Login() {
-  return (
-    <View>
-      <Text>Login Screen Secreen</Text>
-      <TouchableOpacity
-        onPress={async () => {
-          Navigation.setRoot(mainRoot)
-        }}>
-        <Text>Authenticate</Text>
-      </TouchableOpacity>
-    </View>
-  )
-}
+
 Navigation.registerComponent('Home', () => Home)
 Navigation.registerComponent('Setting', () => Setting)
-Navigation.registerComponent('Login', () => Login)
 
 const mainRoot = {
   root: {
-    bottomTabs: {
+    stack: {
       children: [
         {
-          stack: {
-            children: [{ component: { name: 'Home' } }]
-          }
+          component: { name: 'Home' }
         },
         {
-          stack: {
-            children: [
-              {
-                component: {
-                  name: 'Setting',
-                  id: 'PROFILE_SCREEN_ID',
-                  passProps: {
-                    name: 'John Doe',
-                    status: 'online'
-                  }
-                }
-              }
-            ]
-          }
+          component: { name: 'Setting' }
         }
       ]
     }
@@ -113,5 +109,5 @@ const mainRoot = {
 }
 
 Navigation.events().registerAppLaunchedListener(async () => {
-  Navigation.setRoot(loginRoot)
+  Navigation.setRoot(mainRoot)
 })
